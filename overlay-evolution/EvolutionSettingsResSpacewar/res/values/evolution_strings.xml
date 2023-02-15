@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2015 The Android Open Source Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- ROM maintainer name -->
+    <string name="build_maintainer_summary">shin32</string>
+    <string name="build_maintainer_telegram">https://twitter.com/trx8020ocrzn9</string>
+	
+</resources>

@@ -1,0 +1,104 @@
+#
+# Copyright (C) 2022 Evolution X
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+on init
+    # Thermal
+    chown root system /sys/class/thermal/thermal_zone94/mode
+    chown root system /sys/class/thermal/thermal_zone95/mode
+    chmod 0664 /sys/class/thermal/thermal_zone94/mode
+    chmod 0664 /sys/class/thermal/thermal_zone95/mode
+
+on fs
+    # tfa98xx
+    chmod 666 /sys/bus/i2c/devices/1-0034/reg
+    chmod 666 /sys/bus/i2c/devices/1-0034/rw
+    chmod 666 /sys/bus/i2c/devices/1-0035/reg
+    chmod 666 /sys/bus/i2c/devices/1-0035/rw
+    chmod 666 /sys/kernel/debug/tfa98xx-34/rpc
+    chmod 666 /sys/kernel/debug/tfa98xx-35/rpc
+    chmod 666 /proc/tfa98xx-34/rpc
+    chmod 666 /proc/tfa98xx-35/rpc
+    chmod 666 /sys/class/qcom-haptics/lra_calibration
+    chmod 666 /sys/class/qcom-haptics/lra_frequency_hz
+    chmod 666 /sys/class/qcom-haptics/lra_impedance
+    chown system system /sys/class/qcom-haptics/lra_calibration
+    chown system system /sys/class/qcom-haptics/lra_frequency_hz
+    chown system system /sys/class/qcom-haptics/lra_impedance
+
+    # Fingerprint
+    chown system system /sys/devices/platform/soc/soc:qcom,dsi-display-primary/fod_ui
+    chown system system /dev/goodix_fp
+    chmod 666 /dev/goodix_fp
+
+on early-boot
+    # SSR
+    write /sys/bus/msm_subsys/devices/subsys0/restart_level RELATED
+    write /sys/bus/msm_subsys/devices/subsys1/restart_level RELATED
+    write /sys/bus/msm_subsys/devices/subsys2/restart_level RELATED
+    write /sys/bus/msm_subsys/devices/subsys3/restart_level RELATED
+    write /sys/bus/msm_subsys/devices/subsys4/restart_level RELATED
+    write /sys/bus/msm_subsys/devices/subsys5/restart_level RELATED
+    write /sys/bus/msm_subsys/devices/subsys6/restart_level RELATED
+    write /sys/bus/msm_subsys/devices/subsys7/restart_level RELATED
+    write /sys/bus/msm_subsys/devices/subsys8/restart_level RELATED
+    write /sys/bus/msm_subsys/devices/subsys9/restart_level RELATED
+    write /sys/bus/msm_subsys/devices/subsys10/restart_level RELATED
+
+on boot
+    # Charging
+    write /sys/class/qcom-battery/slowcharge_en 0
+
+    # Display
+    chown system system /sys/class/drm/sde-conn-1-DSI-1/panel_id
+    chmod 0666 /sys/class/drm/sde-conn-1-DSI-1/panel_id
+	
+    # Display (hbm)
+    chown system system /sys/class/drm/sde-conn-1-DSI-1/hbm_mode
+    chmod 0666 /sys/class/drm/sde-conn-1-DSI-1/hbm_mode
+
+    # Gestures
+    chown system system /sys/class/spi_master/spi0/spi0.0/fts_edge_mode
+    chown system system /sys/class/spi_master/spi0/spi0.0/fts_gesture_mode
+    chown system system /sys/class/spi_master/spi0/spi0.0/fts_gestures
+    chown system system /sys/class/spi_master/spi0/spi0.0/fts_gesture_double_tap_pressed
+    chown system system /sys/class/spi_master/spi0/spi0.0/fts_gesture_fod_pressed
+    chown system system /sys/class/spi_master/spi0/spi0.0/fts_gesture_single_tap_pressed
+	
+    # Glyph LEDs
+    chown system system /sys/class/leds/aw210xx_led/single_led_br
+
+on post-fs-data
+    # Goodix
+    mkdir /data/vendor/goodix 0700 system system
+
+    # Nothing camera
+    restorecon_recursive /mnt/vendor/persist
+    mkdir /mnt/vendor/persist/camera 0777 cameraserver cameraserver
+    mkdir /data/vendor/camera 0775 camera camera
+    copy /mnt/vendor/persist/camera/bokeh_caldata_uw_persist.bin /data/vendor/camera/bokeh_caldata_uw_persist.bin
+    chmod 0444 /data/vendor/camera/bokeh_caldata_uw_persist.bin
+    chown cameraserver audio /data/vendor/camera/bokeh_caldata_uw_persist.bin
+    copy /mnt/vendor/persist/camera/ois_caldata_wide_persist.bin /data/vendor/camera/ois_caldata_wide_persist.bin
+    chmod 0444 /data/vendor/camera/ois_caldata_wide_persist.bin
+    chown cameraserver audio /data/vendor/camera/ois_caldata_wide_persist.bin
+
+on property:service.bootanim.exit=0
+    # Boot led effect placeholder
+   write /sys/devices/platform/soc/984000.i2c/i2c-0/0-0020/leds/aw210xx_led/bootan_leds_effect 1
+
+on property:service.bootanim.exit=1
+    # Boot led effect placeholder
+    write /sys/devices/platform/soc/984000.i2c/i2c-0/0-0020/leds/aw210xx_led/bootan_leds_effect 0
+    # Wireless Charging
+    chown system system /sys/class/qcom-battery/wireless_boost_en
+    chmod 0666 /sys/class/qcom-battery/wireless_boost_en
+    chmod 0666 /sys/class/qcom-battery/wls_st38_reg
+    chmod 0666 /sys/class/qcom-battery/wls_reverse_status
+    chown system system /sys/class/qcom-battery/charge_power
+    chown system system /sys/class/qcom-battery/wls_st38_en
+
+on property:sys.boot_completed=1
+    # Health
+    restart health-hal-2-1

@@ -1,0 +1,11 @@
+#
+# Copyright (C) 2022 Evolution X
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# LEDs
+/dev/aw210xx_nf          0444    system    system
+
+# NFC
+/dev/pn553        0660    nfc           nfc
